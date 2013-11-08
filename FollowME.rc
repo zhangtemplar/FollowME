@@ -1,0 +1,283 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\FollowME.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\FollowME.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About FollowME"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "FollowME, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+IDD_FOLLOWME_DIALOG DIALOGEX 0, 0, 424, 222
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "FollowME"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,204,186,50,14
+    CONTROL         "",IDC_VITAMINCTRL1,
+                    "{70EDCF63-CA7E-4812-8528-DA1EA2FD53B6}",WS_TABSTOP,264,114,150,102
+    PUSHBUTTON      "Connect",IDC_BUTTON_CONNECT,204,204,50,14
+    EDITTEXT        IDC_EDIT_USER,60,186,40,14,ES_AUTOHSCROLL
+    LTEXT           "User",IDC_STATIC,6,186,16,8
+    LTEXT           "Password",IDC_STATIC,108,186,32,8
+    EDITTEXT        IDC_EDIT_PASSWORD,156,186,40,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "IP",IDC_STATIC,6,204,8,8
+    CONTROL         "",IDC_IPADDRESS1,"SysIPAddress32",WS_TABSTOP,24,204,78,15
+    LTEXT           "Port",IDC_STATIC,108,204,14,8
+    EDITTEXT        IDC_EDIT_PORT,156,204,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_DRROBOTSDKCONTROLCTRL1,
+                    "{BA13A8F8-8612-4A93-A09C-3DFAC0D3AACF}",WS_TABSTOP,24,186,30,12
+    GROUPBOX        "Robot Control",IDC_STATIC,258,6,90,102
+    PUSHBUTTON      "Forward",IDC_BUTTON_FORWARD,270,18,50,14
+    PUSHBUTTON      "Left",IDC_BUTTON_LEFT,270,36,50,14
+    PUSHBUTTON      "Right",IDC_BUTTON_RIGHT,270,54,50,14
+    PUSHBUTTON      "Backward",IDC_BUTTON_BACKWARD,270,72,50,14
+    PUSHBUTTON      "Stop",IDC_BUTTON_STOP,270,90,50,14
+    GROUPBOX        "Robot Sensor",IDC_STATIC,354,6,66,102
+    EDITTEXT        IDC_EDIT_IR0,360,18,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR1,390,18,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR2,360,36,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR3,390,36,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR4,360,54,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR5,390,54,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IR6,360,73,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SONAR0,390,73,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SONAR1,360,90,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SONAR2,390,90,24,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    CONTROL         "",IDC_SLIDER_SPEED,"msctls_trackbar32",TBS_VERT | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,324,12,18,90
+    CONTROL         "",IDC_Image_View,"Static",SS_BLACKFRAME,6,6,252,174
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "TODO: <Company name>"
+            VALUE "FileDescription", "TODO: <File description>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "FollowME.exe"
+            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "OriginalFilename", "FollowME.exe"
+            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_FOLLOWME_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 417
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_FOLLOWME_DIALOG DLGINIT
+BEGIN
+    IDC_VITAMINCTRL1, 0x376, 618, 0
+0x0000, 0x0000, 0x5976, 0x3814, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0002, 0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 0xffff, 0x0000, 
+0x0002, 0x0000, 0x0000, 0x0050, 0x0000, 0x000a, 0x0000, 0x0041, 0x0075, 
+0x0074, 0x006f, 0x0000, 0x0002, 0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 
+0x0002, 0x0000, 0x0000, 0x3a98, 0x0000, 0x0002, 0x0000, 0xffff, 0x0001, 
+0x0000, 0x0002, 0x0000, 0x0000, 0xffff, 0x0002, 0x0000, 0x0000, 0x0002, 
+0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x01f4, 0x0000, 0xe360, 0x0016, 0xffff, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0010, 0xffff, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0xffff, 0x0005, 0x0000, 0x0005, 0x0000, 0x0007, 0x0220, 
+0x0001, 0x0000, 0x0001, 0x0000, 0x61a8, 0x0000, 0x0002, 0x0000, 0x0002, 
+0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 0x0000, 0xffff, 0x00ff, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0022, 0x0000, 0x0053, 0x004f, 0x0046, 0x0054, 
+0x0057, 0x0041, 0x0052, 0x0045, 0x005c, 0x0056, 0x0069, 0x0074, 0x0061, 
+0x006d, 0x0069, 0x006e, 0x0000, 0x61a8, 0x0000, 0x0032, 0x0000, 0x0000, 
+0x0000, 0x001e, 0x0000, 0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 0x0000, 
+0x0000, 0xffff, 0x0014, 0x0000, 0x0063, 0x003a, 0x005c, 0x0052, 0x0065, 
+0x0063, 0x006f, 0x0072, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0xffff, 0x0014, 0x0000, 0xffff, 0x0160, 0x0000, 0x00f0, 0x0000, 0x0005, 
+0x0000, 0x5976, 0x3814, 0x0000, 0x0000, 0x0002, 0x0000, 0x0004, 0x0000, 
+0x0000, 0x0000, 0x00fd, 0x0000, 0x5976, 0x3814, 0x0003, 0x0000, 0xffff, 
+0x5976, 0x3814, 0x0000, 0x0000, 0x0000, 0xffff, 0x0000, 0x0000, 0x5976, 
+0x3814, 0x0002, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x5976, 0x3814, 0x0000, 0x0000, 0x0000, 
+0x5976, 0x3814, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0002, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 0x0002, 0x0000, 
+0x0000, 0x5976, 0x3814, 0x0000, 0x0000, 0x5976, 0x3814, 0xffff, 0x0000, 
+0x5976, 0x3814, 0x0000, 0xffff, 0xffff, 0x5976, 0x3814, 0x0032, 0x0000, 
+0xffff, 0x0000, 0x0000, 0x0000, 0x5976, 0x3814, 0x0000, 0x0002, 0x0000, 
+0x0000, 0x0002, 0x0000, 0x0000, 0x0002, 0x0000, 0x0000, 0x5976, 0x3814, 
+0xffff, 0x5976, 0x3814, 0x0000, 0x0014, 0x0000, 0x0063, 0x003a, 0x005c, 
+0x0052, 0x0065, 0x0063, 0x006f, 0x0072, 0x0064, 0x0000, 0x000a, 0x0000, 
+0x0043, 0x004c, 0x0049, 0x0050, 0x0000, 0x0000, 0x0000, 0x012c, 0x0000, 
+0x0005, 0x0000, 0x5976, 0x3814, 0x0000, 0x0000, 0x0000, 0x0002, 0x0000, 
+0x0000, 0x0190, 0x0000, 
+    IDC_DRROBOTSDKCONTROLCTRL1, 0x376, 20, 0
+0x0000, 0x0000, 0x0000, 0x0001, 0x04a7, 0x0000, 0x0211, 0x0000, 0x0000, 
+0x0000, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About FollowME..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\FollowME.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
