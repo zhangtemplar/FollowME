@@ -273,6 +273,7 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 		is_connected=true;
 		m_connect.SetWindowTextA("Stop");
 		SetTimer(TIMER_FRAME, 100, NULL);
+
 	}
 }
 
@@ -289,69 +290,25 @@ void CFollowMEDlg::OnBnClickedOk()
 void CFollowMEDlg::OnBnClickedButtonForward()
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(true);
-	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
-	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
-	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
-	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
-	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (m_speed*10, -m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
+	m_VitCtrl.SendCameraCommand("up", 30000);
 }
 
 void CFollowMEDlg::OnBnClickedButtonLeft()
 {
 	// TODO: Add your control notification handler code here
-	long cmd1,cmd2;
-
-    cmd1 = m_encoder0 - cWHOLE_RANGE / 3;
-    cmd2 = m_encoder1 - cWHOLE_RANGE / 3;
-    
-   //change cmd1, cmd2 to valid data range
-    if (cmd1 < 0) cmd1 = cmd1 + cFULL_COUNT;
-    if (cmd2 < 0) cmd2 = cmd2 + cFULL_COUNT;
-    if (cmd1 > cFULL_COUNT) cmd1 = cmd1 - cFULL_COUNT;
-    if (cmd2 > cFULL_COUNT) cmd2 = cmd2 - cFULL_COUNT;
-
-
-	m_MOTSDK.SetDcMotorControlMode (0,M_POSITION);
-	m_MOTSDK.SetDcMotorControlMode (1,M_POSITION);
-	m_MOTSDK.SetDcMotorVelocityControlPID (0, 30, 10, 0);
-	m_MOTSDK.SetDcMotorPositionControlPID (0, 600,30,600);
-	m_MOTSDK.SetDcMotorPositionControlPID (1, 600,30,600);
-	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,1000);
+	m_VitCtrl.SendCameraCommand("left", 30000);
 }
 
 void CFollowMEDlg::OnBnClickedButtonRight()
 {
 	// TODO: Add your control notification handler code here
-	long cmd1,cmd2;
-
-    cmd1 = m_encoder0 + cWHOLE_RANGE / 3;
-    cmd2 = m_encoder1 + cWHOLE_RANGE / 3;
-    
-    // change cmd1, cmd2 to valid data range
-    if (cmd1 < 0) cmd1 = cmd1 + cFULL_COUNT;
-    if (cmd2 < 0) cmd2 = cmd2 + cFULL_COUNT;
-    if (cmd1 > cFULL_COUNT) cmd1 = cmd1 - cFULL_COUNT;
-    if (cmd2 > cFULL_COUNT) cmd2 = cmd2 - cFULL_COUNT;
-
-
-	m_MOTSDK.SetDcMotorControlMode (0,M_POSITION);
-	m_MOTSDK.SetDcMotorControlMode (1,M_POSITION);
-	m_MOTSDK.SetDcMotorVelocityControlPID (0, 30, 10, 0);
-	m_MOTSDK.SetDcMotorPositionControlPID (0, 600,30,600);
-	m_MOTSDK.SetDcMotorPositionControlPID (1, 600,30,600);
-	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,1000);	
+	m_VitCtrl.SendCameraCommand("right", 30000);
 }
 
 void CFollowMEDlg::OnBnClickedButtonBackward()
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(true);
-	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
-	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
-	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
-	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
-	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (-m_speed*10, m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
+	m_VitCtrl.SendCameraCommand("down", 30000);
 }
 
 void CFollowMEDlg::OnBnClickedButtonStop()
