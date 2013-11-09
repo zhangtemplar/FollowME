@@ -88,4 +88,20 @@ public:
 	DetectionScanner *scanner;
 	// this function shows the IplImage in the picture control
 	void ShowImage(IplImage* img, UINT ID);
+private:
+	// // this function implements the robot moving function
+	void RobotMove(int direction, int speed);
+public:
+	afx_msg void OnBnClickedButtonMove();
+	// this controls the speed
+	CSliderCtrl m_slider_speed;
+	// direction
+	CSliderCtrl m_slider_direction;
+	int m_direction;
+	// show the speed
+	CEdit m_edit_speed;
+	// show the direction
+	CEdit m_edit_direction;
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

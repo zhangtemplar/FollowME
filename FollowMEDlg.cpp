@@ -5,6 +5,9 @@
 #include "FollowME.h"
 #include "FollowMEDlg.h"
 #include "Cvvimage.h"
+#include "math.h"
+#define PI 3.14159265
+#define SQRT2 1.414
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,6 +76,7 @@ CFollowMEDlg::CFollowMEDlg(CWnd* pParent /*=NULL*/)
 	, m_encoder1(0)
 	, m_speed(0)
 	, frame(NULL)
+	, m_direction(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -97,8 +101,10 @@ void CFollowMEDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_SONAR0, m_sonar0);
 	DDX_Text(pDX, IDC_EDIT_SONAR1, m_sonar1);
 	DDX_Text(pDX, IDC_EDIT_SONAR2, m_sonar2);
-	DDX_Slider(pDX, IDC_SLIDER_SPEED, m_speed);
-	DDV_MinMaxInt(pDX, m_speed, 0, 100);
+	DDX_Control(pDX, IDC_SLIDER_SPEED, m_slider_speed);
+	DDX_Control(pDX, IDC_SLIDER_DIRECTION, m_slider_direction);
+	DDX_Control(pDX, IDC_EDIT_DIRECTION, m_edit_speed);
+	DDX_Control(pDX, IDC_EDIT_SPEED, m_edit_direction);
 }
 
 BEGIN_MESSAGE_MAP(CFollowMEDlg, CDialog)
@@ -114,6 +120,9 @@ BEGIN_MESSAGE_MAP(CFollowMEDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BACKWARD, &CFollowMEDlg::OnBnClickedButtonBackward)
 	ON_BN_CLICKED(IDC_BUTTON_STOP, &CFollowMEDlg::OnBnClickedButtonStop)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_MOVE, &CFollowMEDlg::OnBnClickedButtonMove)
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -156,8 +165,16 @@ BOOL CFollowMEDlg::OnInitDialog()
 
 	// set the robot
 	m_MOTSDK.connectRobot ("DrRobotMotion");
-	m_speed=20;
-	UpdateData(false);
+	m_slider_speed.SetRange(0, 100);
+	m_slider_speed.SetPos(m_speed);
+	char str[80];
+	sprintf(str, "%d", m_speed);
+	m_edit_speed.SetWindowTextA(str);
+	m_slider_direction.SetRange(0, 360);
+	m_slider_direction.SetPos(m_direction);
+	sprintf(str, "%d", m_direction);
+	m_edit_direction.SetWindowTextA(str);
+
 
 	// set the timer for grabing the frames from the camera
 	frame=0;
@@ -277,7 +294,7 @@ void CFollowMEDlg::OnBnClickedButtonForward()
 	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
 	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
 	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
-	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (-m_speed*10, m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
+	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (m_speed*10, -m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
 }
 
 void CFollowMEDlg::OnBnClickedButtonLeft()
@@ -334,7 +351,7 @@ void CFollowMEDlg::OnBnClickedButtonBackward()
 	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
 	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
 	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
-	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (m_speed*10, -m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
+	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (-m_speed*10, m_speed*10,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
 }
 
 void CFollowMEDlg::OnBnClickedButtonStop()
@@ -455,4 +472,52 @@ void CFollowMEDlg::ShowImage(IplImage* img, UINT ID)
 	cimg.DrawToHDC( hDC, &rect );	
  
 	ReleaseDC( pDC );
+}
+
+// this function implements the robot moving function
+// direction: 0~pi*2
+// speed: 0~100
+void CFollowMEDlg::RobotMove(int direction, int speed)
+{
+	UpdateData(true);
+	// compute the speed for each wheel
+	short left=(short) SQRT2*speed*10*sin(direction*PI/180+PI/4);
+	short right=(short) SQRT2*speed*10*sin(direction*PI/180-PI/4);
+	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
+	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
+	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
+	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
+	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (left, right,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
+}
+
+void CFollowMEDlg::OnBnClickedButtonMove()
+{
+	// TODO: Add your control notification handler code here
+	RobotMove(m_direction, m_speed);
+}
+
+void CFollowMEDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: Add your message handler code here and/or call default
+	if (pScrollBar->GetDlgCtrlID()==IDC_SLIDER_DIRECTION)
+	{
+		m_direction=m_slider_direction.GetPos();
+		char str[80];
+		sprintf(str, "%d", m_direction);
+		m_edit_direction.SetWindowTextA(str);
+	}
+	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+void CFollowMEDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: Add your message handler code here and/or call default
+	if (pScrollBar->GetDlgCtrlID()==IDC_SLIDER_SPEED)
+	{
+		m_speed=m_slider_speed.GetPos();
+		char str[80];
+		sprintf(str, "%d", m_speed);
+		m_edit_speed.SetWindowTextA(str);
+	}
+	CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
 }
