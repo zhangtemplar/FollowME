@@ -156,13 +156,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "TODO: <Company name>"
-            VALUE "FileDescription", "TODO: <File description>"
+            VALUE "CompanyName", "Arizona State University"
+            VALUE "FileDescription", "TODO: <This programm will have a robot detect a pedestrain and follow the pedestrain.>"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "FollowME.exe"
-            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "LegalCopyright", "(c) <Arizona State University>.  All rights reserved."
             VALUE "OriginalFilename", "FollowME.exe"
-            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductName", "FollowME"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END

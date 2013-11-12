@@ -123,6 +123,7 @@ BEGIN_MESSAGE_MAP(CFollowMEDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_MOVE, &CFollowMEDlg::OnBnClickedButtonMove)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
+	ON_STN_CLICKED(IDC_Image_View, &CFollowMEDlg::OnStnClickedImageView)
 END_MESSAGE_MAP()
 
 
@@ -477,4 +478,13 @@ void CFollowMEDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		m_edit_speed.SetWindowTextA(str);
 	}
 	CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+
+// we will take a snapshot once the user have clicked the image view
+void CFollowMEDlg::OnStnClickedImageView()
+{
+	// TODO: Add your control notification handler code here
+	CTime theTime; 
+	theTime=CTime::GetCurrentTime();
+	m_VitCtrl.SaveSnapshot(1, theTime.Format("%Y-%M-%d-%H-%M-%S"));
 }

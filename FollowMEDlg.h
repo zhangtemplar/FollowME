@@ -104,4 +104,5 @@ public:
 	CEdit m_edit_direction;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnStnClickedImageView();
 };
