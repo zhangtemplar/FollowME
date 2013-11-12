@@ -270,6 +270,8 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 
 		m_VitCtrl.put_ServerModelType(2);
 		m_VitCtrl.Connect();
+		m_VitCtrl.RecallPtzPosition("followme");
+
 		// change the button caption
 		is_connected=true;
 		m_connect.SetWindowTextA("Stop");
@@ -322,6 +324,7 @@ BEGIN_EVENTSINK_MAP(CFollowMEDlg, CDialog)
 	ON_EVENT(CFollowMEDlg, IDC_DRROBOTSDKCONTROLCTRL1, 1, CFollowMEDlg::StandardSensorEventDrrobotsdkcontrolctrl1, VTS_NONE)
 	ON_EVENT(CFollowMEDlg, IDC_DRROBOTSDKCONTROLCTRL1, 2, CFollowMEDlg::MotorSensorEventDrrobotsdkcontrolctrl1, VTS_NONE)
 	ON_EVENT(CFollowMEDlg, IDC_DRROBOTSDKCONTROLCTRL1, 3, CFollowMEDlg::CustomSensorEventDrrobotsdkcontrolctrl1, VTS_NONE)
+	ON_EVENT(CFollowMEDlg, IDC_VITAMINCTRL1, 1, CFollowMEDlg::OnClickVitaminctrl1, VTS_I4 VTS_I4)
 END_EVENTSINK_MAP()
 
 void CFollowMEDlg::StandardSensorEventDrrobotsdkcontrolctrl1()
@@ -486,5 +489,12 @@ void CFollowMEDlg::OnStnClickedImageView()
 	// TODO: Add your control notification handler code here
 	CTime theTime; 
 	theTime=CTime::GetCurrentTime();
-	m_VitCtrl.SaveSnapshot(1, theTime.Format("%Y-%M-%d-%H-%M-%S"));
+	m_VitCtrl.SaveSnapshot(2, theTime.Format("%Y-%M-%d-%H-%M-%S.bmp"));
+	//m_VitCtrl.SavePresetPosition("followme");
+}
+
+// we will save the location of the camera
+void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
+{
+	// TODO: Add your message handler code here
 }
