@@ -9,6 +9,16 @@
 #include "d:\robot\follow_me\followme\pedestrian_icra\pedestrian.h"
 
 
+typedef struct PedestrainThreadParam
+{
+	IplImage** frame;
+	DetectionScanner *scanner;
+	std::vector<CPedestrainRect> results;
+	bool is_processing;
+}PEDESTRAINTHREADPARAM;
+
+UINT PedestrainThreadFunction(LPVOID pParam);
+
 // CFollowMEDlg dialog
 class CFollowMEDlg : public CDialog
 {
@@ -106,4 +116,6 @@ public:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnStnClickedImageView();
 	void OnClickVitaminctrl1(long lX, long lY);
+	// the parameter for multi-threading
+	PEDESTRAINTHREADPARAM *pedestrain_thread_param;
 };

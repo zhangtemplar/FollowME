@@ -77,6 +77,7 @@ CFollowMEDlg::CFollowMEDlg(CWnd* pParent /*=NULL*/)
 	, m_speed(0)
 	, frame(NULL)
 	, m_direction(0)
+	, pedestrain_thread_param(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -176,13 +177,14 @@ BOOL CFollowMEDlg::OnInitDialog()
 	sprintf(str, "%d", m_direction);
 	m_edit_direction.SetWindowTextA(str);
 
-
-	// set the timer for grabing the frames from the camera
-	frame=0;
-
 	// for the human detector
+	frame=0;
 	scanner=new DetectionScanner(HUMAN_height,HUMAN_width,HUMAN_xdiv,HUMAN_ydiv,256,0.8);
 	LoadCascade(*scanner);
+	pedestrain_thread_param=new PEDESTRAINTHREADPARAM;
+	pedestrain_thread_param->frame=&frame;
+	pedestrain_thread_param->scanner=scanner;
+	pedestrain_thread_param->is_processing=false;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -379,10 +381,15 @@ void CFollowMEDlg::OnTimer(UINT_PTR nIDEvent)
 		VariantClear(&vInfo);    // must release the buffer
 
 		// perform the detection
-		std::vector<CPedestrainRect> results=DetectHuman(frame,*scanner);
+		// to do: create a seperate thread for pedestrain detection
+		// std::vector<CPedestrainRect> results=DetectHuman(frame,*scanner);
+		if (!pedestrain_thread_param->is_processing)
+		{
+			AfxBeginThread(PedestrainThreadFunction, pedestrain_thread_param);
+		}
 		// show the detection result
-		for(unsigned int i=0;i<results.size();i++)
-            cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+		for(unsigned int i=0;i<pedestrain_thread_param->results.size();i++)
+            cvRectangle(frame,cvPoint(pedestrain_thread_param->results[i].left,pedestrain_thread_param->results[i].top),cvPoint(pedestrain_thread_param->results[i].right,pedestrain_thread_param->results[i].bottom),CV_RGB(255,0,0),2);
 		ShowImage(frame, IDC_Image_View);
 	}
 	CDialog::OnTimer(nIDEvent);
@@ -497,4 +504,19 @@ void CFollowMEDlg::OnStnClickedImageView()
 void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
 {
 	// TODO: Add your message handler code here
+}
+
+// this function implements pedstraint detection
+UINT PedestrainThreadFunction(LPVOID pParam)
+{
+	PEDESTRAINTHREADPARAM *param=(PEDESTRAINTHREADPARAM *)pParam;
+	param->is_processing=true;
+	std::vector<CPedestrainRect> results=DetectHuman(*(param->frame),*(param->scanner));
+	param->results.clear();
+	for (int i=0; i<results.size(); i++)
+	{
+		param->results.push_back(results[i]);
+	}
+	param->is_processing=false;
+	return 0;
 }
