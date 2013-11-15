@@ -75,7 +75,6 @@ CFollowMEDlg::CFollowMEDlg(CWnd* pParent /*=NULL*/)
 	, m_encoder0(0)
 	, m_encoder1(0)
 	, m_speed(0)
-	, frame(NULL)
 	, m_direction(0)
 	, pedestrain_thread_param(0)
 {
@@ -178,13 +177,12 @@ BOOL CFollowMEDlg::OnInitDialog()
 	m_edit_direction.SetWindowTextA(str);
 
 	// for the human detector
-	frame=0;
 	scanner=new DetectionScanner(HUMAN_height,HUMAN_width,HUMAN_xdiv,HUMAN_ydiv,256,0.8);
 	LoadCascade(*scanner);
 	pedestrain_thread_param=new PEDESTRAINTHREADPARAM;
-	pedestrain_thread_param->frame=&frame;
 	pedestrain_thread_param->scanner=scanner;
 	pedestrain_thread_param->is_processing=false;
+	pedestrain_thread_param->window=(void *)this;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -272,12 +270,14 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 
 		m_VitCtrl.put_ServerModelType(2);
 		m_VitCtrl.Connect();
-		m_VitCtrl.RecallPtzPosition("followme");
+		m_VitCtrl.RecallPtzPosition("followme5");
 
 		// change the button caption
 		is_connected=true;
 		m_connect.SetWindowTextA("Stop");
-		SetTimer(TIMER_FRAME, 100, NULL);
+
+		// start the timer, where we capture the frame and run pedestrain detection
+		SetTimer(TIMER_FRAME, 200, NULL);
 
 	}
 }
@@ -292,6 +292,10 @@ void CFollowMEDlg::OnBnClickedOk()
 	OnOK();
 }
 
+/*
+those functions control the camera location
+left, far controls the focusing of the camera
+*/
 void CFollowMEDlg::OnBnClickedButtonForward()
 {
 	// TODO: Add your control notification handler code here
@@ -367,36 +371,17 @@ void CFollowMEDlg::OnTimer(UINT_PTR nIDEvent)
 	// check whether we need to grab a frame or not
 	if (nIDEvent==TIMER_FRAME)
 	{
-		VARIANT vData, vInfo;
-		if (m_VitCtrl.GetSnapshot(2, &vData, &vInfo)!=S_OK)
-		{
-			CDialog::OnTimer(nIDEvent);
-			return;
-		}
-		// get the data from the buffer
-		// we need to check the structure of variant
-		Variant2IpplImage(vData, vInfo);
-		// release this buffer
-		VariantClear(&vData);    // must release the buffer
-		VariantClear(&vInfo);    // must release the buffer
-
-		// perform the detection
-		// to do: create a seperate thread for pedestrain detection
-		// std::vector<CPedestrainRect> results=DetectHuman(frame,*scanner);
+		// we process a new frame, when the previous one is finished
 		if (!pedestrain_thread_param->is_processing)
 		{
 			AfxBeginThread(PedestrainThreadFunction, pedestrain_thread_param);
 		}
-		// show the detection result
-		for(unsigned int i=0;i<pedestrain_thread_param->results.size();i++)
-            cvRectangle(frame,cvPoint(pedestrain_thread_param->results[i].left,pedestrain_thread_param->results[i].top),cvPoint(pedestrain_thread_param->results[i].right,pedestrain_thread_param->results[i].bottom),CV_RGB(255,0,0),2);
-		ShowImage(frame, IDC_Image_View);
 	}
 	CDialog::OnTimer(nIDEvent);
 }
 
 // // this function converts this VARIANT to IplImage
-int CFollowMEDlg::Variant2IpplImage(VARIANT vData , VARIANT vInfo)
+int CFollowMEDlg::Variant2IpplImage(VARIANT vData , VARIANT vInfo, IplImage *frame)
 {
 	unsigned int width, height;
 	width=*((long *)vInfo.parray[0].pvData+2);
@@ -447,7 +432,6 @@ void CFollowMEDlg::ShowImage(IplImage* img, UINT ID)
 // speed: 0~100
 void CFollowMEDlg::RobotMove(int direction, int speed)
 {
-	UpdateData(true);
 	// compute the speed for each wheel
 	short left=(short) SQRT2*speed*10*sin(direction*PI/180+PI/4);
 	short right=(short) SQRT2*speed*10*sin(direction*PI/180-PI/4);
@@ -497,7 +481,7 @@ void CFollowMEDlg::OnStnClickedImageView()
 	CTime theTime; 
 	theTime=CTime::GetCurrentTime();
 	m_VitCtrl.SaveSnapshot(2, theTime.Format("%Y-%M-%d-%H-%M-%S.bmp"));
-	//m_VitCtrl.SavePresetPosition("followme");
+	m_VitCtrl.SavePresetPosition("followme5");
 }
 
 // we will save the location of the camera
@@ -510,13 +494,98 @@ void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
 UINT PedestrainThreadFunction(LPVOID pParam)
 {
 	PEDESTRAINTHREADPARAM *param=(PEDESTRAINTHREADPARAM *)pParam;
+	CFollowMEDlg *dlg=(CFollowMEDlg *)param->window;
 	param->is_processing=true;
-	std::vector<CPedestrainRect> results=DetectHuman(*(param->frame),*(param->scanner));
+
+	// grab frame from the camera
+	VARIANT vData, vInfo;
+	if (dlg->m_VitCtrl.GetSnapshot(2, &vData, &vInfo)!=S_OK)
+	{
+		// failed
+		param->is_processing=false;	
+		return -1;
+	}
+	// get the data from the buffer
+	// we need to check the structure of variant
+	IplImage *frame;
+	dlg->Variant2IpplImage(vData, vInfo, frame);
+	// release this buffer
+	VariantClear(&vData);    // must release the buffer
+	VariantClear(&vInfo);    // must release the buffer
+
+	// perform the detection
+	std::vector<CPedestrainRect> results=DetectHuman(frame,*(param->scanner));
+
+	// send the command
+	dlg->TrackPedestrain(results, frame);
+
+	// save the result
 	param->results.clear();
 	for (int i=0; i<results.size(); i++)
 	{
 		param->results.push_back(results[i]);
 	}
-	param->is_processing=false;
+
+	// show the detection result
+	for(unsigned int i=0;i<results.size();i++)
+        cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+	dlg->ShowImage(frame, IDC_Image_View);
+
+	cvReleaseImage(&frame);
+	param->is_processing=false;	
 	return 0;
+}
+// this function computes the distance and orientation required for the robot
+void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage *frame)
+{
+	// we will utilize the location of the windows to decide the movement of the robot
+	int width=frame->width;
+	int height=frame->height;
+	// currently we are only considering one pedestrain in view
+	if (target.size()>0)
+	{
+		// we use the size of window to predict the distance
+		double distance=59000.0/(target[0].right-target[0].left)/(target[0].bottom-target[0].top);
+		// avoid the false detection
+		if (distance>13)
+		{
+			return;
+		}
+		// the direction is related to the deviation of window center to the frame center
+		double deviation=(target[0].left+target[0].right-width)/75;
+		int direction=0;
+		if (distance>=7)
+		{
+			// we need to move forward
+			// asin returns value in [-pi/2,pi/2]
+			direction=(int)(atan(deviation/7)*180/PI);
+			if (direction<0)
+			{
+				direction=360+direction;
+			}
+		}
+		else
+		{
+			// we need to move backward
+			direction=180-(int)(atan(deviation/7)*180/PI);
+		}
+		// compute the moving time
+		int duration=(int) (abs(distance-7)*2000/m_speed);
+		// run the command
+		RobotMoveTime(direction, m_speed, duration);
+	}
+}
+
+// this function controls the movement of robot precisely
+// duration: the duration of movement in millisecond
+void CFollowMEDlg::RobotMoveTime(int direction, int speed, int duration)
+{
+	// compute the speed for each wheel
+	short left=(short) SQRT2*speed*10*sin(direction*PI/180+PI/4);
+	short right=(short) SQRT2*speed*10*sin(direction*PI/180-PI/4);
+	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
+	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
+	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
+	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
+	m_MOTSDK.DcMotorVelocityTimeCtrAll (left, right,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL, (short)duration); 
 }

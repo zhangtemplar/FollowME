@@ -11,10 +11,10 @@
 
 typedef struct PedestrainThreadParam
 {
-	IplImage** frame;
 	DetectionScanner *scanner;
 	std::vector<CPedestrainRect> results;
 	bool is_processing;
+	void *window;
 }PEDESTRAINTHREADPARAM;
 
 UINT PedestrainThreadFunction(LPVOID pParam);
@@ -90,17 +90,13 @@ public:
 	// this stuff controls the speed
 	int m_speed;
 	// this variable stores the current frame for the camera
-	IplImage* frame;
+	// IplImage* frame;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	// // this function converts this VARIANT to IplImage
-	int Variant2IpplImage(VARIANT vData , VARIANT vInfo);
-	// this variable stores the scascade scanner
-	DetectionScanner *scanner;
-	// this function shows the IplImage in the picture control
-	void ShowImage(IplImage* img, UINT ID);
 private:
 	// // this function implements the robot moving function
 	void RobotMove(int direction, int speed);
+	// this function controls the movement of robot precisely
+	void RobotMoveTime(int direction, int speed, int duration);
 public:
 	afx_msg void OnBnClickedButtonMove();
 	// this controls the speed
@@ -118,4 +114,12 @@ public:
 	void OnClickVitaminctrl1(long lX, long lY);
 	// the parameter for multi-threading
 	PEDESTRAINTHREADPARAM *pedestrain_thread_param;
+	// this function computes the distance and orientation required for the robot
+	void TrackPedestrain(std::vector<CPedestrainRect> target, IplImage *frame);
+	// this function converts this VARIANT to IplImage
+	int Variant2IpplImage(VARIANT vData , VARIANT vInfo, IplImage *frame);
+	// this variable stores the scascade scanner
+	DetectionScanner *scanner;
+	// this function shows the IplImage in the picture control
+	void ShowImage(IplImage* img, UINT ID);
 };

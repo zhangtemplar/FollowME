@@ -157,7 +157,7 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Arizona State University"
-            VALUE "FileDescription", "TODO: <This programm will have a robot detect a pedestrain and follow the pedestrain.>"
+            VALUE "FileDescription", "This programm will have a robot detect a pedestrain and follow the pedestrain."
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "FollowME.exe"
             VALUE "LegalCopyright", "(c) <Arizona State University>.  All rights reserved."
