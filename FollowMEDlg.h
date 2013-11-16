@@ -117,7 +117,7 @@ public:
 	// this function computes the distance and orientation required for the robot
 	void TrackPedestrain(std::vector<CPedestrainRect> target, IplImage *frame);
 	// this function converts this VARIANT to IplImage
-	int Variant2IpplImage(VARIANT vData , VARIANT vInfo, IplImage *frame);
+	IplImage * Variant2IpplImage(VARIANT vData , VARIANT vInfo);
 	// this variable stores the scascade scanner
 	DetectionScanner *scanner;
 	// this function shows the IplImage in the picture control

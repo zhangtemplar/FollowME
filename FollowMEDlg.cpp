@@ -167,11 +167,13 @@ BOOL CFollowMEDlg::OnInitDialog()
 	// set the robot
 	m_MOTSDK.connectRobot ("DrRobotMotion");
 	m_slider_speed.SetRange(0, 100);
+	m_speed=20;
 	m_slider_speed.SetPos(m_speed);
 	char str[80];
 	sprintf(str, "%d", m_speed);
 	m_edit_speed.SetWindowTextA(str);
 	m_slider_direction.SetRange(0, 360);
+	m_direction=0;
 	m_slider_direction.SetPos(m_direction);
 	sprintf(str, "%d", m_direction);
 	m_edit_direction.SetWindowTextA(str);
@@ -277,7 +279,7 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 		m_connect.SetWindowTextA("Stop");
 
 		// start the timer, where we capture the frame and run pedestrain detection
-		SetTimer(TIMER_FRAME, 200, NULL);
+		SetTimer(TIMER_FRAME, 100, NULL);
 
 	}
 }
@@ -381,21 +383,18 @@ void CFollowMEDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 // // this function converts this VARIANT to IplImage
-int CFollowMEDlg::Variant2IpplImage(VARIANT vData , VARIANT vInfo, IplImage *frame)
+IplImage * CFollowMEDlg::Variant2IpplImage(VARIANT vData , VARIANT vInfo)
 {
 	unsigned int width, height;
 	width=*((long *)vInfo.parray[0].pvData+2);
 	height=*((long *)vInfo.parray[0].pvData+6);
 	IplImage* img_tmp;
 	img_tmp=cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
-	if (frame==0)
-	{
-		frame=cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
-	}
+	IplImage *frame=cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 	memcpy(img_tmp->imageData, (unsigned char *)vData.parray[0].pvData+54, width*height*3);
 	cvConvertImage(img_tmp, frame, CV_CVTIMG_FLIP);
 	cvReleaseImage(&img_tmp);
-	return 0;
+	return frame;
 }
 
 // this function shows the IplImage in the picture control
@@ -507,8 +506,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	}
 	// get the data from the buffer
 	// we need to check the structure of variant
-	IplImage *frame;
-	dlg->Variant2IpplImage(vData, vInfo, frame);
+	IplImage *frame=dlg->Variant2IpplImage(vData, vInfo);
 	// release this buffer
 	VariantClear(&vData);    // must release the buffer
 	VariantClear(&vInfo);    // must release the buffer
@@ -549,12 +547,14 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		// avoid the false detection
 		if (distance>13)
 		{
+			m_MOTSDK.DisableDcMotor (0);
+			m_MOTSDK.DisableDcMotor (1);
 			return;
 		}
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
 		int direction=0;
-		if (distance>=7)
+		if (distance>=8)
 		{
 			// we need to move forward
 			// asin returns value in [-pi/2,pi/2]
