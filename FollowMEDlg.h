@@ -7,14 +7,27 @@
 #include "afxwin.h"
 #include "drrobotsdkcontrolctrl1.h"
 #include "d:\robot\follow_me\followme\pedestrian_icra\pedestrian.h"
-
+#include "D:\Robot\Follow_ME\FollowME\struck\src\Tracker.h"
+#include "D:\Robot\Follow_ME\FollowME\struck\src\Config.h"
 
 typedef struct PedestrainThreadParam
 {
+	// the config of the tracker
+	Config *config;
+	// the instance for tracker
+	Tracker *tracker;
+	// the instance for detection
 	DetectionScanner *scanner;
+	// stores the result of tracking or detection
 	std::vector<CPedestrainRect> results;
+	// this variable blocks the queue
 	bool is_processing;
+	// this parameter pass the dialog handle
 	void *window;
+	// this counter decides when to switch between detector and tracker
+	int counter;
+	// the interval between the detection and tracking
+	int interval;
 }PEDESTRAINTHREADPARAM;
 
 UINT PedestrainThreadFunction(LPVOID pParam);

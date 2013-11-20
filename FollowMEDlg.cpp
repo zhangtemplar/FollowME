@@ -178,13 +178,17 @@ BOOL CFollowMEDlg::OnInitDialog()
 	sprintf(str, "%d", m_direction);
 	m_edit_direction.SetWindowTextA(str);
 
-	// for the human detector
+	// for the human detector and tracker
 	scanner=new DetectionScanner(HUMAN_height,HUMAN_width,HUMAN_xdiv,HUMAN_ydiv,256,0.8);
 	LoadCascade(*scanner);
 	pedestrain_thread_param=new PEDESTRAINTHREADPARAM;
 	pedestrain_thread_param->scanner=scanner;
 	pedestrain_thread_param->is_processing=false;
 	pedestrain_thread_param->window=(void *)this;
+	pedestrain_thread_param->config=new Config("config.txt");
+	pedestrain_thread_param->tracker=new Tracker(*pedestrain_thread_param->config);
+	pedestrain_thread_param->counter=0;
+	pedestrain_thread_param->interval=10;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -512,7 +516,53 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	VariantClear(&vInfo);    // must release the buffer
 
 	// perform the detection
-	std::vector<CPedestrainRect> results=DetectHuman(frame,*(param->scanner));
+	bool detected=false;
+	std::vector<CPedestrainRect> results;
+	if (param->counter==0)
+	{
+		// for the first frame of each cycle, we apply the detector
+		results=DetectHuman(frame,*(param->scanner));
+		// to intialize the model
+		if (results.size()>0)
+		{
+			detected=true;
+			// we already initialize before, just reset it
+			if (param->tracker->IsInitialised())
+			{
+				param->tracker->Reset();
+			}
+			// we do an initialization
+			param->tracker->Initialise(frame, FloatRect(results[0].left, results[0].top, results[0].right-results[0].left, results[0].bottom-results[0].top));
+			param->counter=(param->counter+1)%param->interval;
+		}
+		// the detection failed, we track with previous model
+		else if (param->tracker->IsInitialised())
+		{
+			param->tracker->Track(frame);
+			// convert the result to the compatible format
+			CPedestrainRect rect;
+			FloatRect rect2=param->tracker->GetBB();
+			rect.left=rect2.XMin();
+			rect.top=rect2.YMin();
+			rect.right=rect2.XMin()+rect2.Width();
+			rect.bottom=rect2.YMin()+rect2.Height();
+			results.push_back(rect);
+		}
+	}
+	else if (param->tracker->IsInitialised())
+	{
+		// for most of time, we just run the tracker
+		param->tracker->Track(frame);
+		// convert the result to the compatible format;
+		CPedestrainRect rect;
+		FloatRect rect2=param->tracker->GetBB();
+		rect.left=rect2.XMin();
+		rect.top=rect2.YMin();
+		rect.right=rect2.XMin()+rect2.Width();
+		rect.bottom=rect2.YMin()+rect2.Height();
+		results.push_back(rect);
+		param->counter=(param->counter+1)%param->interval;
+	}
 
 	// send the command
 	dlg->TrackPedestrain(results, frame);
@@ -525,8 +575,17 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	}
 
 	// show the detection result
-	for(unsigned int i=0;i<results.size();i++)
-        cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+	if (detected)
+	{
+		for(unsigned int i=0;i<results.size();i++)
+			cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+	}
+	else
+	{
+		for(unsigned int i=0;i<results.size();i++)
+			cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(0,255,0),2);
+	}
+		
 	dlg->ShowImage(frame, IDC_Image_View);
 
 	cvReleaseImage(&frame);
@@ -545,12 +604,12 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		// we use the size of window to predict the distance
 		double distance=59000.0/(target[0].right-target[0].left)/(target[0].bottom-target[0].top);
 		// avoid the false detection
-		if (distance>13)
-		{
-			m_MOTSDK.DisableDcMotor (0);
-			m_MOTSDK.DisableDcMotor (1);
-			return;
-		}
+		//if (distance>13)
+		//{
+		//	m_MOTSDK.DisableDcMotor (0);
+		//	m_MOTSDK.DisableDcMotor (1);
+		//	return;
+		//}
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
 		int direction=0;
@@ -570,7 +629,7 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 			direction=180-(int)(atan(deviation/7)*180/PI);
 		}
 		// compute the moving time
-		int duration=(int) (abs(distance-7)*2000/m_speed);
+		int duration=(int) (abs(distance-8)*20000/m_speed);
 		// run the command
 		RobotMoveTime(direction, m_speed, duration);
 	}
