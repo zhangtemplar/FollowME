@@ -164,6 +164,7 @@ BOOL CFollowMEDlg::OnInitDialog()
 	m_password.SetWindowTextA("drrobot");
 	m_port.SetWindowTextA("8081");
 	m_ip.SetWindowTextA("192.168.0.199");
+	ConnectCamera();
 
 	// set the robot
 	m_MOTSDK.connectRobot ("DrRobotMotion");
@@ -245,6 +246,7 @@ HCURSOR CFollowMEDlg::OnQueryDragIcon()
 
 /*
 connect the camera
+the usage is changed: this function enables/disable the tracking algorithm
 */
 void CFollowMEDlg::OnBnClickedButtonConnect()
 {
@@ -252,39 +254,16 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 	// connect the camera
 	if (is_connected)
 	{
-		m_VitCtrl.Disconnect();
 		is_connected=false;
-		m_connect.SetWindowTextA("Connect");
+		m_connect.SetWindowTextA("Start");
 		KillTimer(TIMER_FRAME);
+		// stop the robot
+		OnBnClickedButtonStop();
 	}
 	else
 	{
-		CString user;
-		m_user.GetWindowTextA(user);
-		m_VitCtrl.put_UserName((LPCTSTR) user);
-
-		CString password;
-		m_password.GetWindowTextA(password);
-		m_VitCtrl.put_Password((LPCTSTR) password);
-
-		CString ip;
-		m_ip.GetWindowTextA(ip);
-		m_VitCtrl.put_RemoteIPAddr((LPCTSTR) ip);
-
-		CString port;
-		m_port.GetWindowTextA(port);
-		m_VitCtrl.put_HttpPort(atoi(port));
-
-		m_VitCtrl.put_ServerModelType(2);
-		m_VitCtrl.Connect();
-
-		// set the camera location
-		//m_VitCtrl.SendCameraCommand("home", 30000);
-
-		// change the button caption
 		is_connected=true;
 		m_connect.SetWindowTextA("Stop");
-
 		// start the timer, where we capture the frame and run pedestrain detection
 		SetTimer(TIMER_FRAME, 100, NULL);
 	}
@@ -293,10 +272,8 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 void CFollowMEDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
-	if (is_connected)
-	{
-		m_VitCtrl.Disconnect();
-	}
+	m_VitCtrl.Disconnect();
+	OnBnClickedButtonStop();
 	OnOK();
 }
 
@@ -675,4 +652,30 @@ void CFollowMEDlg::RobotMovePosition(int distance, int direction)
 	m_MOTSDK.SetDcMotorPositionControlPID (0, 600,30,600);
 	m_MOTSDK.SetDcMotorPositionControlPID (1, 600,30,600);
 	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,100);
+}
+
+bool CFollowMEDlg::ConnectCamera(void)
+{
+	CString user;
+	m_user.GetWindowTextA(user);
+	m_VitCtrl.put_UserName((LPCTSTR) user);
+
+	CString password;
+	m_password.GetWindowTextA(password);
+	m_VitCtrl.put_Password((LPCTSTR) password);
+
+	CString ip;
+	m_ip.GetWindowTextA(ip);
+	m_VitCtrl.put_RemoteIPAddr((LPCTSTR) ip);
+
+	CString port;
+	m_port.GetWindowTextA(port);
+	m_VitCtrl.put_HttpPort(atoi(port));
+
+	m_VitCtrl.put_ServerModelType(2);
+	m_VitCtrl.Connect();
+
+	// set the camera location
+	//m_VitCtrl.SendCameraCommand("home", 30000);
+	return true;
 }
