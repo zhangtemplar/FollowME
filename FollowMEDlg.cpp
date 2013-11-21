@@ -6,6 +6,7 @@
 #include "FollowMEDlg.h"
 #include "Cvvimage.h"
 #include "math.h"
+#include <windows.h> 
 #define PI 3.14159265
 #define SQRT2 1.414
 
@@ -276,7 +277,9 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 
 		m_VitCtrl.put_ServerModelType(2);
 		m_VitCtrl.Connect();
-		m_VitCtrl.RecallPtzPosition("followme5");
+
+		// set the camera location
+		//m_VitCtrl.SendCameraCommand("home", 30000);
 
 		// change the button caption
 		is_connected=true;
@@ -284,7 +287,6 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 
 		// start the timer, where we capture the frame and run pedestrain detection
 		SetTimer(TIMER_FRAME, 100, NULL);
-
 	}
 }
 
@@ -448,7 +450,8 @@ void CFollowMEDlg::RobotMove(int direction, int speed)
 void CFollowMEDlg::OnBnClickedButtonMove()
 {
 	// TODO: Add your control notification handler code here
-	RobotMove(m_direction, m_speed);
+	// RobotMove(m_direction, m_speed);
+	RobotMovePosition(m_speed, m_direction);
 }
 
 void CFollowMEDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -484,7 +487,6 @@ void CFollowMEDlg::OnStnClickedImageView()
 	CTime theTime; 
 	theTime=CTime::GetCurrentTime();
 	m_VitCtrl.SaveSnapshot(2, theTime.Format("%Y-%M-%d-%H-%M-%S.bmp"));
-	m_VitCtrl.SavePresetPosition("followme5");
 }
 
 // we will save the location of the camera
@@ -535,20 +537,8 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			param->tracker->Initialise(frame, FloatRect(results[0].left, results[0].top, results[0].right-results[0].left, results[0].bottom-results[0].top));
 			param->counter=(param->counter+1)%param->interval;
 		}
-		// the detection failed, we track with previous model
-		else if (param->tracker->IsInitialised())
-		{
-			param->tracker->Track(frame);
-			// convert the result to the compatible format
-			CPedestrainRect rect;
-			FloatRect rect2=param->tracker->GetBB();
-			rect.left=rect2.XMin();
-			rect.top=rect2.YMin();
-			rect.right=rect2.XMin()+rect2.Width();
-			rect.bottom=rect2.YMin()+rect2.Height();
-			results.push_back(rect);
-		}
 	}
+	// for tracker
 	else if (param->tracker->IsInitialised())
 	{
 		// for most of time, we just run the tracker
@@ -601,50 +591,76 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 	// currently we are only considering one pedestrain in view
 	if (target.size()>0)
 	{
-		// we use the size of window to predict the distance
+		// we use the size of window to predict the distance (in 50 centimeter)
 		double distance=59000.0/(target[0].right-target[0].left)/(target[0].bottom-target[0].top);
-		// avoid the false detection
-		//if (distance>13)
-		//{
-		//	m_MOTSDK.DisableDcMotor (0);
-		//	m_MOTSDK.DisableDcMotor (1);
-		//	return;
-		//}
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
-		int direction=0;
-		if (distance>=8)
+		int direction=(int)(atan(deviation/7.5)*180/PI);
+		RobotMovePosition((int) (distance*5), direction);
+		if (distance>=7.5 && distance<8.5)
 		{
-			// we need to move forward
-			// asin returns value in [-pi/2,pi/2]
-			direction=(int)(atan(deviation/7)*180/PI);
-			if (direction<0)
-			{
-				direction=360+direction;
-			}
-		}
-		else
-		{
-			// we need to move backward
-			direction=180-(int)(atan(deviation/7)*180/PI);
+			return;
 		}
 		// compute the moving time
-		int duration=(int) (abs(distance-8)*20000/m_speed);
-		// run the command
-		RobotMoveTime(direction, m_speed, duration);
+		//int duration=(int) ((distance-8)*200);
+		//if (distance>=8)
+		//{
+		//	// we need to move forward
+		//	// asin returns value in [-pi/2,pi/2]
+		//	RobotMoveTime(direction, 100, duration);
+		//}
+		//else
+		//{
+		//	// we need to move backward
+		//	RobotMoveTime(direction, -100, duration);
+		//}
+		char str[80];
+		sprintf(str, "%f", distance);
+		m_edit_speed.SetWindowTextA(str);
+		sprintf(str, "%d", direction);
+		m_edit_direction.SetWindowTextA(str);
 	}
 }
 
-// this function controls the movement of robot precisely
+// this function controls the movement of robot by time
 // duration: the duration of movement in millisecond
 void CFollowMEDlg::RobotMoveTime(int direction, int speed, int duration)
 {
 	// compute the speed for each wheel
-	short left=(short) SQRT2*speed*10*sin(direction*PI/180+PI/4);
-	short right=(short) SQRT2*speed*10*sin(direction*PI/180-PI/4);
+	short left=(short) SQRT2*speed*15*sin(direction*PI/180+PI/4);
+	short right=(short) SQRT2*speed*15*sin(direction*PI/180-PI/4);
 	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
 	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
 	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
 	m_MOTSDK.SetDcMotorVelocityControlPID (1, 10, 3, 100);
 	m_MOTSDK.DcMotorVelocityTimeCtrAll (left, right,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL, (short)duration); 
+}
+
+// this function controls the movement of robot precisely
+// distance:	the distance to move in centimeter. Note 750 roughly means the robot moves forward 0.5 meter
+// direction:	the direction in degree (0~360)
+void CFollowMEDlg::RobotMovePosition(int distance, int direction)
+{
+	// 750 pulse == 0.5 m
+	int left=(short) SQRT2*15*distance*sin(direction*PI/180+PI/4);
+	int right=(short) SQRT2*15*distance*sin(direction*PI/180-PI/4);
+
+	long cmd1,cmd2;
+
+    cmd1 = m_encoder0 + left;
+    cmd2 = m_encoder1 + right;
+    
+   //change cmd1, cmd2 to valid data range
+    if (cmd1 < 0) cmd1 = cmd1 + cFULL_COUNT;
+    if (cmd2 < 0) cmd2 = cmd2 + cFULL_COUNT;
+    if (cmd1 > cFULL_COUNT) cmd1 = cmd1 - cFULL_COUNT;
+    if (cmd2 > cFULL_COUNT) cmd2 = cmd2 - cFULL_COUNT;
+
+
+	m_MOTSDK.SetDcMotorControlMode (0,M_POSITION);
+	m_MOTSDK.SetDcMotorControlMode (1,M_POSITION);
+	m_MOTSDK.SetDcMotorVelocityControlPID (0, 30, 10, 0);
+	m_MOTSDK.SetDcMotorPositionControlPID (0, 600,30,600);
+	m_MOTSDK.SetDcMotorPositionControlPID (1, 600,30,600);
+	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,1000);
 }

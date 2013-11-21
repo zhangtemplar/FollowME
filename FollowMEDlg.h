@@ -135,4 +135,5 @@ public:
 	DetectionScanner *scanner;
 	// this function shows the IplImage in the picture control
 	void ShowImage(IplImage* img, UINT ID);
+	void RobotMovePosition(int left, int right);
 };
