@@ -168,7 +168,7 @@ BOOL CFollowMEDlg::OnInitDialog()
 	// set the robot
 	m_MOTSDK.connectRobot ("DrRobotMotion");
 	m_slider_speed.SetRange(0, 100);
-	m_speed=20;
+	m_speed=10;
 	m_slider_speed.SetPos(m_speed);
 	char str[80];
 	sprintf(str, "%d", m_speed);
@@ -189,7 +189,7 @@ BOOL CFollowMEDlg::OnInitDialog()
 	pedestrain_thread_param->config=new Config("config.txt");
 	pedestrain_thread_param->tracker=new Tracker(*pedestrain_thread_param->config);
 	pedestrain_thread_param->counter=0;
-	pedestrain_thread_param->interval=10;
+	pedestrain_thread_param->interval=5;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -555,7 +555,10 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	}
 
 	// send the command
-	dlg->TrackPedestrain(results, frame);
+	if (param->counter==1)
+	{
+		dlg->TrackPedestrain(results, frame);
+	}
 
 	// save the result
 	param->results.clear();
@@ -596,10 +599,19 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
 		int direction=(int)(atan(deviation/7.5)*180/PI);
-		RobotMovePosition((int) (distance*5), direction);
-		if (distance>=7.5 && distance<8.5)
+		if (distance>=7.5 && distance<=8.5)
 		{
 			return;
+		}
+		else if (distance> 8.5)
+		{
+			//RobotMovePosition(5, direction);
+			RobotMoveTime(direction, m_speed, int(abs(distance-8)*100));
+		}
+		else
+		{
+			//RobotMovePosition(-5, direction);
+			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*100));
 		}
 		// compute the moving time
 		//int duration=(int) ((distance-8)*200);
@@ -627,8 +639,8 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 void CFollowMEDlg::RobotMoveTime(int direction, int speed, int duration)
 {
 	// compute the speed for each wheel
-	short left=(short) SQRT2*speed*15*sin(direction*PI/180+PI/4);
-	short right=(short) SQRT2*speed*15*sin(direction*PI/180-PI/4);
+	short left=(short) SQRT2*speed*10*sin(direction*PI/180+PI/4);
+	short right=(short) SQRT2*speed*10*sin(direction*PI/180-PI/4);
 	m_MOTSDK.SetDcMotorControlMode (0,M_VELOCITY);
 	m_MOTSDK.SetDcMotorControlMode (1,M_VELOCITY);
 	m_MOTSDK.SetDcMotorVelocityControlPID (0, 10, 3, 100);
@@ -662,5 +674,5 @@ void CFollowMEDlg::RobotMovePosition(int distance, int direction)
 	m_MOTSDK.SetDcMotorVelocityControlPID (0, 30, 10, 0);
 	m_MOTSDK.SetDcMotorPositionControlPID (0, 600,30,600);
 	m_MOTSDK.SetDcMotorPositionControlPID (1, 600,30,600);
-	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,1000);
+	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,100);
 }
