@@ -137,4 +137,5 @@ public:
 	void ShowImage(IplImage* img, UINT ID);
 	void RobotMovePosition(int left, int right);
 	bool ConnectCamera(void);
+	afx_msg void OnEnChangeEditIr0();
 };

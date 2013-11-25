@@ -32,7 +32,6 @@
 #define IDC_SLIDER_SPEED                1025
 #define IDC_Image_View                  1026
 #define IDC_BUTTON_MOVE                 1027
-#define IDC_SLIDER1                     1028
 #define IDC_SLIDER_DIRECTION            1028
 #define IDC_EDIT_DIRECTION              1029
 #define IDC_EDIT_SPEED                  1030

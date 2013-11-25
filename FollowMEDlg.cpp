@@ -125,6 +125,7 @@ BEGIN_MESSAGE_MAP(CFollowMEDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
 	ON_STN_CLICKED(IDC_Image_View, &CFollowMEDlg::OnStnClickedImageView)
+	ON_EN_CHANGE(IDC_EDIT_IR0, &CFollowMEDlg::OnEnChangeEditIr0)
 END_MESSAGE_MAP()
 
 
@@ -678,4 +679,14 @@ bool CFollowMEDlg::ConnectCamera(void)
 	// set the camera location
 	//m_VitCtrl.SendCameraCommand("home", 30000);
 	return true;
+}
+
+void CFollowMEDlg::OnEnChangeEditIr0()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
 }

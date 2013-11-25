@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="D:\opencv\build\x86\vc9\lib\opencv_highgui246.lib D:\opencv\build\x86\vc9\lib\opencv_imgproc246.lib D:\opencv\build\x86\vc9\lib\opencv_core246.lib"
+				AdditionalDependencies="D:\opencv\build\x86\vc9\lib\opencv_core246d.lib D:\opencv\build\x86\vc9\lib\opencv_features2d246d.lib D:\opencv\build\x86\vc9\lib\opencv_highgui246d.lib D:\opencv\build\x86\vc9\lib\opencv_ml246d.lib D:\opencv\build\x86\vc9\lib\opencv_nonfree246d.lib D:\opencv\build\x86\vc9\lib\opencv_imgproc246d.lib D:\opencv\build\x86\vc9\lib\opencv_flann246d.lib D:\opencv\build\x86\vc9\lib\opencv_legacy246d.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -150,7 +150,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="D:\opencv\build\x86\vc9\lib\opencv_highgui246.lib D:\opencv\build\x86\vc9\lib\opencv_imgproc246.lib D:\opencv\build\x86\vc9\lib\opencv_core246.lib"
+				AdditionalDependencies="D:\opencv\build\x86\vc9\lib\opencv_core246d.lib D:\opencv\build\x86\vc9\lib\opencv_features2d246d.lib D:\opencv\build\x86\vc9\lib\opencv_highgui246d.lib D:\opencv\build\x86\vc9\lib\opencv_ml246.lib D:\opencv\build\x86\vc9\lib\opencv_nonfree246.lib D:\opencv\build\x86\vc9\lib\opencv_imgproc246.lib D:\opencv\build\x86\vc9\lib\opencv_flann246.lib D:\opencv\build\x86\vc9\lib\opencv_legacy246.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -247,6 +247,22 @@
 			</File>
 			<File
 				RelativePath=".\FollowMEDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Gesture_Recognizer\GestureRecognition.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\gesturerecognition.cpp"
 				>
 			</File>
 			<File
@@ -525,6 +541,10 @@
 			</File>
 			<File
 				RelativePath=".\FollowMEDlg.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Gesture_Recognizer\GestureRecognition.h"
 				>
 			</File>
 			<File
