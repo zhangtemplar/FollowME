@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\opencv\build\include;D:\opencv\build\include\opencv;D:\Robot\Follow_ME\FollowME\struck"
+				AdditionalIncludeDirectories="D:\opencv\build\include;D:\opencv\build\include\opencv;D:\Robot\Follow_ME\FollowME\FollowME\Gesture_Recognizer;D:\Robot\Follow_ME\FollowME\FollowME\Pedestrian_ICRA;D:\Robot\Follow_ME\FollowME\FollowME\struck\src;D:\Robot\Follow_ME\FollowME\FollowME\struck\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -127,7 +127,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\opencv\build\include;D:\opencv\build\include\opencv;D:\Robot\Follow_ME\FollowME\struck"
+				AdditionalIncludeDirectories="D:\opencv\build\include;D:\opencv\build\include\opencv;D:\Robot\Follow_ME\FollowME\FollowME\Gesture_Recognizer;D:\Robot\Follow_ME\FollowME\FollowME\Pedestrian_ICRA;D:\Robot\Follow_ME\FollowME\FollowME\struck\src;D:\Robot\Follow_ME\FollowME\FollowME\struck\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -190,16 +190,8 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\struck\src\Config.cpp"
+				RelativePath=".\struck\src\Config.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -212,22 +204,22 @@
 			<File
 				RelativePath=".\Cvvimage.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\drrobotsdkcontrolctrl1.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\struck\src\Features.cpp"
-				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\drrobotsdkcontrolctrl1.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\struck\src\Features.cpp"
+				>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -250,7 +242,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Gesture_Recognizer\GestureRecognition.cpp"
+				RelativePath=".\struck\src\GraphUtils\GraphUtils.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -262,20 +254,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\gesturerecognition.cpp"
+				RelativePath=".\struck\src\HaarFeature.cpp"
 				>
-			</File>
-			<File
-				RelativePath="..\struck\src\GraphUtils\GraphUtils.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -286,16 +266,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\HaarFeature.cpp"
+				RelativePath=".\struck\src\HaarFeatures.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -306,16 +278,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\HaarFeatures.cpp"
+				RelativePath=".\struck\src\HistogramFeatures.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -326,16 +290,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\HistogramFeatures.cpp"
+				RelativePath=".\struck\src\ImageRep.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -346,16 +302,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\ImageRep.cpp"
+				RelativePath=".\struck\src\LaRank.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -366,16 +314,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\LaRank.cpp"
+				RelativePath=".\struck\src\MultiFeatures.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -386,16 +326,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\MultiFeatures.cpp"
+				RelativePath=".\Pedestrian_ICRA\Pedestrian_ICRA.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -406,16 +338,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\Pedestrian_ICRA\Pedestrian_ICRA.cpp"
+				RelativePath=".\struck\src\RawFeatures.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -426,36 +350,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\RawFeatures.cpp"
+				RelativePath=".\struck\src\Sampler.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\struck\src\Sampler.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -486,16 +382,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\struck\src\Tracker.cpp"
+				RelativePath=".\struck\src\Tracker.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -516,7 +404,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\struck\src\Config.h"
+				RelativePath=".\struck\src\Config.h"
 				>
 			</File>
 			<File
@@ -528,7 +416,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\Features.h"
+				RelativePath=".\struck\src\Features.h"
 				>
 			</File>
 			<File
@@ -544,59 +432,55 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Gesture_Recognizer\GestureRecognition.h"
+				RelativePath=".\struck\src\GraphUtils\GraphUtils.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\GraphUtils\GraphUtils.h"
+				RelativePath=".\struck\src\HaarFeature.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\HaarFeature.h"
+				RelativePath=".\struck\src\HaarFeatures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\HaarFeatures.h"
+				RelativePath=".\struck\src\HistogramFeatures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\HistogramFeatures.h"
+				RelativePath=".\struck\src\ImageRep.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\ImageRep.h"
+				RelativePath=".\Pedestrian_ICRA\IntImage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Pedestrian_ICRA\IntImage.h"
+				RelativePath=".\struck\src\Kernels.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\Kernels.h"
+				RelativePath=".\struck\src\LaRank.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\LaRank.h"
+				RelativePath=".\Pedestrian_ICRA\mdarray.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Pedestrian_ICRA\mdarray.h"
+				RelativePath=".\struck\src\MultiFeatures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\MultiFeatures.h"
+				RelativePath=".\Pedestrian_ICRA\Pedestrian.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Pedestrian_ICRA\Pedestrian.h"
+				RelativePath=".\struck\src\RawFeatures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\RawFeatures.h"
-				>
-			</File>
-			<File
-				RelativePath="..\struck\src\Rect.h"
+				RelativePath=".\struck\src\Rect.h"
 				>
 			</File>
 			<File
@@ -604,11 +488,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\Sample.h"
+				RelativePath=".\struck\src\Sample.h"
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\Sampler.h"
+				RelativePath=".\struck\src\Sampler.h"
 				>
 			</File>
 			<File
@@ -620,7 +504,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\struck\src\Tracker.h"
+				RelativePath=".\struck\src\Tracker.h"
 				>
 			</File>
 			<File

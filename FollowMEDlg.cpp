@@ -192,6 +192,8 @@ BOOL CFollowMEDlg::OnInitDialog()
 	pedestrain_thread_param->tracker=new Tracker(*pedestrain_thread_param->config);
 	pedestrain_thread_param->counter=0;
 	pedestrain_thread_param->interval=5;
+	pedestrain_thread_param->is_gesture=false;
+	pedestrain_thread_param->is_tracking=false;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -473,7 +475,10 @@ void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
 	// TODO: Add your message handler code here
 }
 
-// this function implements pedstraint detection
+/*
+this function implements pedstraint detection
+V2: we use the state machine to handle the logic behind pedestrain detection/tracking and gesture recognition
+*/
 UINT PedestrainThreadFunction(LPVOID pParam)
 {
 	PEDESTRAINTHREADPARAM *param=(PEDESTRAINTHREADPARAM *)pParam;
@@ -532,8 +537,28 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 		param->counter=(param->counter+1)%param->interval;
 	}
 
+	// we haven't activated the gesture recognition component
+	//if (param->is_gesture)
+	//{
+	//	// compute the optical flow
+	//	if (param->sequence.size()>1)
+	//	{
+	//		cvReleaseImage(& param->sequence.pop());
+	//	}
+	//	Mat frame_diff;
+	//	absdiff(param->sequence.front(), frame, frame_diff);
+	//	Scalar frame_diff_sum=sum(frame_diff);
+	//	if (frame_diff_sum.val[0]>
+	//	param->sequence.push(frame);
+	//}
+	//// we start the gesture recognition now
+	//else
+	//{
+	//	// apply the gesture recognition
+	//}
+
 	// send the command
-	if (param->counter==1)
+	if (param->counter==1 && param->is_tracking)
 	{
 		dlg->TrackPedestrain(results, frame);
 	}

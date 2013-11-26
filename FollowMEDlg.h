@@ -6,9 +6,10 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "drrobotsdkcontrolctrl1.h"
-#include "d:\robot\follow_me\followme\pedestrian_icra\pedestrian.h"
-#include "D:\Robot\Follow_ME\FollowME\struck\src\Tracker.h"
-#include "D:\Robot\Follow_ME\FollowME\struck\src\Config.h"
+#include "pedestrian.h"
+#include "Tracker.h"
+#include "Config.h"
+#include <queue>          // std::queue
 
 typedef struct PedestrainThreadParam
 {
@@ -28,6 +29,18 @@ typedef struct PedestrainThreadParam
 	int counter;
 	// the interval between the detection and tracking
 	int interval;
+	// this variable indicates whether we are recognizing gesture
+	bool is_gesture;
+	// this variable indicates whether we are tracking
+	bool is_tracking;
+	// this queue store a short sequence of frames
+	std::queue<IplImage *> sequence;
+	// the length of sequence
+	int sequence_length;
+	// the threshold for a gesture
+	// to make the algorithm robust, we classify each image in the sequence
+	// if the number of positives is larger than the threshold, we mark the gesture detected
+	int gesture_threshold;
 }PEDESTRAINTHREADPARAM;
 
 UINT PedestrainThreadFunction(LPVOID pParam);
