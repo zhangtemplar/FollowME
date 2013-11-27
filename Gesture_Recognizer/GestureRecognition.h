@@ -19,7 +19,7 @@ public:
 	// recognize one image
 	int recognize(IplImage *frame);
 	~GestureRecognition(void);
-	bool is_active(Mat image, Rect window);
+	bool is_active(Mat image, cv::Rect window);
 private:
 	CvSVM svm_model;
 	Ptr<DescriptorMatcher> matcher;

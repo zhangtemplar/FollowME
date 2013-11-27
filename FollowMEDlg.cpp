@@ -188,12 +188,12 @@ BOOL CFollowMEDlg::OnInitDialog()
 	pedestrain_thread_param->scanner=scanner;
 	pedestrain_thread_param->is_processing=false;
 	pedestrain_thread_param->window=(void *)this;
-	pedestrain_thread_param->config=new Config("config.txt");
-	pedestrain_thread_param->tracker=new Tracker(*pedestrain_thread_param->config);
+	pedestrain_thread_param->tracker=new Tracker(Config("config.txt"));
 	pedestrain_thread_param->counter=0;
-	pedestrain_thread_param->interval=5;
 	pedestrain_thread_param->is_gesture=false;
 	pedestrain_thread_param->is_tracking=false;
+	pedestrain_thread_param->config=&config;
+	pedestrain_thread_param->gesture=new GestureRecognition("classifier.xml.gz", "dictionary.yml");
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -518,7 +518,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			}
 			// we do an initialization
 			param->tracker->Initialise(frame, FloatRect(results[0].left, results[0].top, results[0].right-results[0].left, results[0].bottom-results[0].top));
-			param->counter=(param->counter+1)%param->interval;
+			param->counter=(param->counter+1)%param->config->detection_interval;
 		}
 	}
 	// for tracker
@@ -534,57 +534,88 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 		rect.right=rect2.XMin()+rect2.Width();
 		rect.bottom=rect2.YMin()+rect2.Height();
 		results.push_back(rect);
-		param->counter=(param->counter+1)%param->interval;
+		param->counter=(param->counter+1)%param->config->detection_interval;
 	}
 
-	// we haven't activated the gesture recognition component
-	//if (param->is_gesture)
-	//{
-	//	// compute the optical flow
-	//	if (param->sequence.size()>1)
-	//	{
-	//		cvReleaseImage(& param->sequence.pop());
-	//	}
-	//	Mat frame_diff;
-	//	absdiff(param->sequence.front(), frame, frame_diff);
-	//	Scalar frame_diff_sum=sum(frame_diff);
-	//	if (frame_diff_sum.val[0]>
-	//	param->sequence.push(frame);
-	//}
-	//// we start the gesture recognition now
-	//else
-	//{
-	//	// apply the gesture recognition
-	//}
+	if (results.size()>0)
+	{
+		// we haven't activated the gesture recognition component
+		if (!param->is_gesture)
+		{
+			// compute the optical flow
+			if (param->sequence.size()>1)
+			{
+				cvReleaseImage(& param->sequence.front());
+				param->sequence.pop();
+			}
+			Mat frame_diff;
+			absdiff(cv::Mat(param->sequence.front()), cv::Mat(frame), frame_diff);
+			Scalar frame_diff_sum=sum(frame_diff);
+			// ok the optical flow passes, we start the gesture recognition
+			if (frame_diff_sum.val[0]>=param->config->diff_threshold)
+			{
+				param->is_gesture=true;
+			}
+			param->sequence.push(frame);
+		}
+		// we start the gesture recognition now
+		else
+		{
+			// apply the gesture recognition
+			if (param->sequence.size()>=param->config->sequence_length)
+			{
+				int num_positive=0;
+				while(param->sequence.size()>=0)
+				{
+					IplImage *image=param->sequence.front();
+					param->sequence.pop();
+					if (param->gesture->recognize(image)>0)
+					{
+						num_positive++;
+					}
+					cvReleaseImage(& image);
+				}
+				// alternate the tracking, if gesture is recognized
+				if (num_positive>param->config->gesture_threshold)
+				{
+					param->is_tracking=param->is_tracking ^ true;
+				}
+				param->is_gesture=false;
+			}
+			else
+			{
+				param->sequence.push(frame);
+			}
+		}
 
-	// send the command
-	if (param->counter==1 && param->is_tracking)
-	{
-		dlg->TrackPedestrain(results, frame);
-	}
+		// send the command
+		if (param->counter==1 && param->is_tracking)
+		{
+			dlg->TrackPedestrain(results, frame);
+		}
 
-	// save the result
-	param->results.clear();
-	for (int i=0; i<results.size(); i++)
-	{
-		param->results.push_back(results[i]);
-	}
+		// save the result
+		param->results.clear();
+		for (int i=0; i<results.size(); i++)
+		{
+			param->results.push_back(results[i]);
+		}
 
-	// show the detection result
-	if (detected)
-	{
-		for(unsigned int i=0;i<results.size();i++)
-			cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+		// show the detection result
+		if (detected)
+		{
+			for(unsigned int i=0;i<results.size();i++)
+				cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(255,0,0),2);
+		}
+		else
+		{
+			for(unsigned int i=0;i<results.size();i++)
+				cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(0,255,0),2);
+		}
 	}
-	else
-	{
-		for(unsigned int i=0;i<results.size();i++)
-			cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(0,255,0),2);
-	}
-		
 	dlg->ShowImage(frame, IDC_Image_View);
 
-	cvReleaseImage(&frame);
+	//cvReleaseImage(&frame);
 	param->is_processing=false;	
 	return 0;
 }

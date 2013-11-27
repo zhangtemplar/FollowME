@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<my_svm type_id="opencv-ml-svm">
+  <svm_type>C_SVC</svm_type>
+  <kernel><type>RBF</type>
+    <gamma>1.0000000000000001e-005</gamma></kernel>
+  <C>1.0000000000000001e-001</C>
+  <term_criteria><epsilon>1.1920928955078125e-007</epsilon>
+    <iterations>1000</iterations></term_criteria>
+  <var_all>400</var_all>
+  <var_count>400</var_count>
+  <class_count>2</class_count>
+  <class_labels type_id="opencv-matrix">
+    <rows>1</rows>
+    <cols>2</cols>
+    <dt>i</dt>
+    <data>
+      -1 1</data></class_labels>
+  <class_weights type_id="opencv-matrix">
+    <rows>2</rows>
+    <cols>1</cols>
+    <dt>d</dt>
+    <data>
+      6.8500000000000005e+000 0.</data></class_weights>
+  <sv_total>0</sv_total>
+  <support_vectors>
+    </support_vectors>
+  <decision_functions>
+    <_>
+      <sv_count>0</sv_count>
+      <rho>-8.9884656743115785e+307</rho>
+      <alpha></alpha>
+      <index></index></_></decision_functions></my_svm>
+</opencv_storage>

@@ -64,4 +64,5 @@ bool GestureRecognition::is_active(Mat image, Rect window)
 	//	cv::Rect rect(left, results[0].top, right-left, results[0].bottom-results[0].top);
 	//	cv::Mat(image, rect).copyTo(window);
 	//}
+	return true;
 }
