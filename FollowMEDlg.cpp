@@ -188,7 +188,8 @@ BOOL CFollowMEDlg::OnInitDialog()
 	pedestrain_thread_param->scanner=scanner;
 	pedestrain_thread_param->is_processing=false;
 	pedestrain_thread_param->window=(void *)this;
-	pedestrain_thread_param->tracker=new Tracker(Config("config.txt"));
+	track_config=new Config("config.txt");
+	pedestrain_thread_param->tracker=new Tracker(* track_config);
 	pedestrain_thread_param->counter=0;
 	pedestrain_thread_param->is_gesture=false;
 	pedestrain_thread_param->is_tracking=false;
@@ -545,16 +546,16 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			// compute the optical flow
 			if (param->sequence.size()>1)
 			{
+				Mat frame_diff;
+				absdiff(cv::Mat(param->sequence.front()), cv::Mat(frame), frame_diff);
+				Scalar frame_diff_sum=sum(frame_diff);
+				// ok the optical flow passes, we start the gesture recognition
+				if (frame_diff_sum.val[0]>=param->config->diff_threshold)
+				{
+					param->is_gesture=true;
+				}
 				cvReleaseImage(& param->sequence.front());
 				param->sequence.pop();
-			}
-			Mat frame_diff;
-			absdiff(cv::Mat(param->sequence.front()), cv::Mat(frame), frame_diff);
-			Scalar frame_diff_sum=sum(frame_diff);
-			// ok the optical flow passes, we start the gesture recognition
-			if (frame_diff_sum.val[0]>=param->config->diff_threshold)
-			{
-				param->is_gesture=true;
 			}
 			param->sequence.push(frame);
 		}
@@ -565,7 +566,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			if (param->sequence.size()>=param->config->sequence_length)
 			{
 				int num_positive=0;
-				while(param->sequence.size()>=0)
+				while(param->sequence.size()>0)
 				{
 					IplImage *image=param->sequence.front();
 					param->sequence.pop();
@@ -615,7 +616,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	}
 	dlg->ShowImage(frame, IDC_Image_View);
 
-	//cvReleaseImage(&frame);
+	// cvReleaseImage(&frame);
 	param->is_processing=false;	
 	return 0;
 }

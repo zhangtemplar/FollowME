@@ -116,6 +116,8 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	// the parameter
 	FollowMEConfig config;
+	// configuration for tracking
+	Config *track_config;
 private:
 	// // this function implements the robot moving function
 	void RobotMove(int direction, int speed);
