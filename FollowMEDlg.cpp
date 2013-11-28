@@ -585,8 +585,9 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			}
 			else
 			{
-				param->sequence.push(frame);
+				param->sequence.push(CropWindow(frame, results));
 			}
+			// cvReleaseImage(& frame);
 		}
 
 		// send the command

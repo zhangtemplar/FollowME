@@ -156,5 +156,6 @@ public:
 void RunFiles();
 std::vector<CPedestrainRect> DetectHuman(IplImage* img,DetectionScanner& ds);
 void LoadCascade(DetectionScanner& ds);
+IplImage * CropWindow(IplImage* image, std::vector<CPedestrainRect> results);
 
 #endif // __PESTRIAN_H_

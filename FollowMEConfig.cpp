@@ -3,9 +3,9 @@
 
 FollowMEConfig::FollowMEConfig(void)
 {
-	sequence_length=10;
-	gesture_threshold=3;
-	diff_threshold=50000;
+	sequence_length=4;
+	gesture_threshold=2;
+	diff_threshold=100000;
 	detection_interval=5;
 }
 

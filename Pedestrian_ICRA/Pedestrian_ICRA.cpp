@@ -494,6 +494,24 @@ std::vector<CPedestrainRect> DetectHuman(IplImage* img,DetectionScanner& ds)
 	return results;
 }
 
+// this function crops out an window for the pedestrain
+IplImage * CropWindow(IplImage* image, std::vector<CPedestrainRect> results)
+{
+		// note, we manually expand the width of the image by half on both left and right
+		int width=results[0].right-results[0].left;
+		int left=results[0].left-width/2;
+		int right=results[0].left+width*3/2;
+		left=left>=0?left:0;
+		right=right<image->width?right:(image->width-1);
+		cv::Rect rect(left, results[0].top, right-left, results[0].bottom-results[0].top);
+		cvSetImageROI(image, rect);
+		IplImage *window = cvCreateImage(cvGetSize(image), image->depth, image->nChannels);
+		cvCopy(image, window, NULL);
+		cvResetImageROI(image);
+		return window;
+}
+
+
 // End of Detection functions
 // ---------------------------------------------------------------------
 
