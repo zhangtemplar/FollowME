@@ -159,7 +159,7 @@ BOOL CFollowMEDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	// set the camera
+	// set up the camera configurations
 	is_connected=false;
 	m_user.SetWindowTextA("root");
 	m_password.SetWindowTextA("drrobot");
@@ -167,7 +167,7 @@ BOOL CFollowMEDlg::OnInitDialog()
 	m_ip.SetWindowTextA("192.168.0.199");
 	ConnectCamera();
 
-	// set the robot
+	// set the robot and robot parameters
 	m_MOTSDK.connectRobot ("DrRobotMotion");
 	m_slider_speed.SetRange(0, 100);
 	m_speed=10;
@@ -249,13 +249,12 @@ HCURSOR CFollowMEDlg::OnQueryDragIcon()
 }
 
 /*
-connect the camera
-the usage is changed: this function enables/disable the tracking algorithm
+	start the processing of frames
 */
 void CFollowMEDlg::OnBnClickedButtonConnect()
 {
 	// TODO: Add your control notification handler code here
-	// connect the camera
+	// stop the processing, if we already starts
 	if (is_connected)
 	{
 		is_connected=false;
@@ -264,6 +263,7 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 		// stop the robot
 		OnBnClickedButtonStop();
 	}
+	// start the processing, by start the timer
 	else
 	{
 		is_connected=true;
@@ -273,6 +273,9 @@ void CFollowMEDlg::OnBnClickedButtonConnect()
 	}
 }
 
+/*
+	exit the program
+*/
 void CFollowMEDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
@@ -283,7 +286,6 @@ void CFollowMEDlg::OnBnClickedOk()
 
 /*
 those functions control the camera location
-left, far controls the focusing of the camera
 */
 void CFollowMEDlg::OnBnClickedButtonForward()
 {
@@ -309,6 +311,9 @@ void CFollowMEDlg::OnBnClickedButtonBackward()
 	m_VitCtrl.SendCameraCommand("down", 30000);
 }
 
+/*
+	stop the movement of robots
+*/
 void CFollowMEDlg::OnBnClickedButtonStop()
 {
 	// TODO: Add your control notification handler code here
@@ -322,6 +327,9 @@ BEGIN_EVENTSINK_MAP(CFollowMEDlg, CDialog)
 	ON_EVENT(CFollowMEDlg, IDC_VITAMINCTRL1, 1, CFollowMEDlg::OnClickVitaminctrl1, VTS_I4 VTS_I4)
 END_EVENTSINK_MAP()
 
+/*
+	the infrad sensor, we haven't used it yet
+*/
 void CFollowMEDlg::StandardSensorEventDrrobotsdkcontrolctrl1()
 {
 	// TODO: Add your message handler code here
@@ -347,6 +355,9 @@ void CFollowMEDlg::MotorSensorEventDrrobotsdkcontrolctrl1()
 	//UpdateData(false);
 }
 
+/*
+	this function collects the location of wheels of the robot
+*/
 void CFollowMEDlg::CustomSensorEventDrrobotsdkcontrolctrl1()
 {
 	// TODO: Add your message handler code here
@@ -354,6 +365,10 @@ void CFollowMEDlg::CustomSensorEventDrrobotsdkcontrolctrl1()
 	m_encoder0 = m_MOTSDK.GetEncoderPulse1 ();
 }
 
+/*
+	on each timer event, a new thread will be started to process the frame
+	please refer to "PedestrainThreadFunction" for details of how we process the frame
+*/
 void CFollowMEDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
@@ -428,6 +443,10 @@ void CFollowMEDlg::RobotMove(int direction, int speed)
 	m_MOTSDK.DcMotorVelocityNonTimeCtrAll (left, right,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL); 
 }
 
+/*
+	control the movement of robot manually with specific speed and direction
+	no time control is provided
+*/
 void CFollowMEDlg::OnBnClickedButtonMove()
 {
 	// TODO: Add your control notification handler code here
@@ -435,6 +454,9 @@ void CFollowMEDlg::OnBnClickedButtonMove()
 	RobotMovePosition(m_speed, m_direction);
 }
 
+/*
+	control the moving direction of robot
+*/
 void CFollowMEDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Add your message handler code here and/or call default
@@ -448,6 +470,9 @@ void CFollowMEDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
+/*
+	control the speed of the robot
+*/
 void CFollowMEDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: Add your message handler code here and/or call default
@@ -470,7 +495,7 @@ void CFollowMEDlg::OnStnClickedImageView()
 	m_VitCtrl.SaveSnapshot(2, theTime.Format("%Y-%M-%d-%H-%M-%S.bmp"));
 }
 
-// we will save the location of the camera
+// this function controls the behavior of when we click the camera
 void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
 {
 	// TODO: Add your message handler code here
@@ -479,6 +504,8 @@ void CFollowMEDlg::OnClickVitaminctrl1(long lX, long lY)
 /*
 this function implements pedstraint detection
 V2: we use the state machine to handle the logic behind pedestrain detection/tracking and gesture recognition
+Note, this function has the risk of memory leak, please check the commented out "cvReleaseImage()"
+However, if uncomment this line, there will be run time error reported
 */
 UINT PedestrainThreadFunction(LPVOID pParam)
 {
@@ -621,7 +648,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	param->is_processing=false;	
 	return 0;
 }
-// this function computes the distance and orientation required for the robot
+// this function computes the distance and orientation required for the robot according to the tracking result
 void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage *frame)
 {
 	// we will utilize the location of the windows to decide the movement of the robot
@@ -687,6 +714,7 @@ void CFollowMEDlg::RobotMoveTime(int direction, int speed, int duration)
 // this function controls the movement of robot precisely
 // distance:	the distance to move in centimeter. Note 750 roughly means the robot moves forward 0.5 meter
 // direction:	the direction in degree (0~360)
+// this function is deprecated, due to that it makes the robot moves ugly.
 void CFollowMEDlg::RobotMovePosition(int distance, int direction)
 {
 	// 750 pulse == 0.5 m
@@ -713,6 +741,9 @@ void CFollowMEDlg::RobotMovePosition(int distance, int direction)
 	m_MOTSDK.DcMotorPositionTimeCtrAll (cmd1,cmd2,NO_CONTROL,NO_CONTROL,NO_CONTROL,NO_CONTROL,100);
 }
 
+/*
+	function for connecting the camerea
+*/
 bool CFollowMEDlg::ConnectCamera(void)
 {
 	CString user;

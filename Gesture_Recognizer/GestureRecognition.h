@@ -21,10 +21,13 @@ public:
 	~GestureRecognition(void);
 	bool is_active(Mat image, cv::Rect window);
 private:
+	// classifier
 	CvSVM svm_model;
+	// feature extractor
 	Ptr<DescriptorMatcher> matcher;
 	Ptr<FeatureDetector> detector;
 	Ptr<DescriptorExtractor> extractor;
 	BOWImgDescriptorExtractor *bowDE;
+	// dictionary
 	Mat dictionary;
 };

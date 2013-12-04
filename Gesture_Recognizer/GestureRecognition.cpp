@@ -1,5 +1,8 @@
 #include "GestureRecognition.h"
 
+/*
+	trivial constructor
+*/
 GestureRecognition::GestureRecognition(void)
 {
 	//create a nearest neighbor matcher
@@ -38,6 +41,11 @@ GestureRecognition::GestureRecognition(char * classifier_name, char * dictionary
 	bowDE->setVocabulary(dictionary);
 }
 
+/*
+	recognize a single frame
+	@param	frame		the input frame
+	@return		the recognition result. 1 for recongized gesture, otherwise -1
+*/
 int GestureRecognition::recognize(IplImage *frame)
 {
 	vector<KeyPoint> keypoints;
@@ -50,6 +58,9 @@ int GestureRecognition::recognize(IplImage *frame)
 	return (int) svm_model.predict(histogram);
 }
 
+/*
+	deprecated function
+*/
 bool GestureRecognition::is_active(Mat image, Rect window)
 {
 	//Mat window;

@@ -478,6 +478,10 @@ int DetectHuman(const char* filename,const char* outname,DetectionScanner& ds,st
 
 /*
 * Modified by Qiang on Nov 7th, 2013
+the entry function for detect human
+@param	img:		the input image
+@param	ds:		the scanner
+@return		the window of detection results
 */
 std::vector<CPedestrainRect> DetectHuman(IplImage* img,DetectionScanner& ds)
 {

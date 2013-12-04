@@ -13,6 +13,9 @@
 #include "FollowMEConfig.h"
 #include "GestureRecognition.h"
 
+/*
+	this is the parameter that we will pass to the PedestrainThreadFunction for processing the frames
+*/
 typedef struct PedestrainThreadParam
 {
 	// the instance for tracker
@@ -73,7 +76,7 @@ public:
 	// the variable for the connect button
 	CButton m_connect;
 private:
-	// the flag to check whether the camera is connected or not
+	// the flag to check whether we are processing frame or not
 	bool is_connected;
 	// the user name variable
 	CEdit m_user;
@@ -86,11 +89,13 @@ public:
 	CIPAddressCtrl m_ip;
 	// // the robot
 	CDrrobotsdkcontrolctrl1 m_MOTSDK;
+	// for camera control
 	afx_msg void OnBnClickedButtonForward();
 	afx_msg void OnBnClickedButtonLeft();
 	afx_msg void OnBnClickedButtonRight();
 	afx_msg void OnBnClickedButtonBackward();
 	afx_msg void OnBnClickedButtonStop();
+	// sensor information
 	short m_ir0;
 	short m_ir1;
 	short m_ir2;
@@ -102,17 +107,18 @@ public:
 	short m_sonar1;
 	short m_sonar2;
 	DECLARE_EVENTSINK_MAP()
+	// the event handler for sensor of robot
 	void StandardSensorEventDrrobotsdkcontrolctrl1();
 	void MotorSensorEventDrrobotsdkcontrolctrl1();
 	void CustomSensorEventDrrobotsdkcontrolctrl1();
 	// motion direction
 	int m_motion_direction;
+	// the position of two wheels of robot
 	short m_encoder0;
 	short m_encoder1;
 	// this stuff controls the speed
 	int m_speed;
-	// this variable stores the current frame for the camera
-	// IplImage* frame;
+	// the timer event handler
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	// the parameter
 	FollowMEConfig config;
@@ -134,9 +140,12 @@ public:
 	CEdit m_edit_speed;
 	// show the direction
 	CEdit m_edit_direction;
+	// for speed and direction controls
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	// take the snap shoot
 	afx_msg void OnStnClickedImageView();
+	// controls the position of camera, not used
 	void OnClickVitaminctrl1(long lX, long lY);
 	// the parameter for multi-threading
 	PEDESTRAINTHREADPARAM *pedestrain_thread_param;
@@ -148,7 +157,10 @@ public:
 	DetectionScanner *scanner;
 	// this function shows the IplImage in the picture control
 	void ShowImage(IplImage* img, UINT ID);
-	void RobotMovePosition(int left, int right);
+	// controsl the movement of robot precisely
+	void RobotMovePosition(int distance, int speed);
+	// connec the camera
 	bool ConnectCamera(void);
+	// not used
 	afx_msg void OnEnChangeEditIr0();
 };
