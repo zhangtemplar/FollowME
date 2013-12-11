@@ -125,7 +125,6 @@ BEGIN_MESSAGE_MAP(CFollowMEDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
 	ON_STN_CLICKED(IDC_Image_View, &CFollowMEDlg::OnStnClickedImageView)
-	ON_EN_CHANGE(IDC_EDIT_IR0, &CFollowMEDlg::OnEnChangeEditIr0)
 END_MESSAGE_MAP()
 
 
@@ -666,15 +665,17 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		{
 			return;
 		}
-		else if (distance> 8.5)
+		// we only consider the boxes which is large enough
+		// effectively the distance is smaller than 19
+		else if (distance> 8.5 && distance<=19)
 		{
 			//RobotMovePosition(5, direction);
-			RobotMoveTime(direction, m_speed, int(abs(distance-8)*100));
+			RobotMoveTime(direction, m_speed, int(abs(distance-8)*50));
 		}
 		else
 		{
 			//RobotMovePosition(-5, direction);
-			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*100));
+			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*50));
 		}
 		// compute the moving time
 		//int duration=(int) ((distance-8)*200);
@@ -768,14 +769,4 @@ bool CFollowMEDlg::ConnectCamera(void)
 	// set the camera location
 	//m_VitCtrl.SendCameraCommand("home", 30000);
 	return true;
-}
-
-void CFollowMEDlg::OnEnChangeEditIr0()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialog::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
 }

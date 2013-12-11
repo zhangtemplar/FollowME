@@ -161,6 +161,4 @@ public:
 	void RobotMovePosition(int distance, int speed);
 	// connec the camera
 	bool ConnectCamera(void);
-	// not used
-	afx_msg void OnEnChangeEditIr0();
 };
