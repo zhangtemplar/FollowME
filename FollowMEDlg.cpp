@@ -661,21 +661,26 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
 		int direction=(int)(atan(deviation/7.5)*180/PI);
-		if ((distance>=7.5 && distance<=8.5) || distance>20)
+		if (distance>=7.5 && distance<=8.5)
 		{
 			return;
 		}
 		// we only consider the boxes which is large enough
 		// effectively the distance is smaller than 19
-		else if (distance> 8.5)
+		else 
 		{
-			//RobotMovePosition(5, direction);
-			RobotMoveTime(direction, m_speed, int(abs(distance-8)*50));
-		}
-		else
-		{
-			//RobotMovePosition(-5, direction);
-			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*50));
+			distance=abs(distance-8)*50;
+			distance=distance>200?200:distance;
+			if (distance> 8.5)
+			{
+				//RobotMovePosition(5, direction);
+				RobotMoveTime(direction, m_speed, (int) distance);
+			}
+			else
+			{
+				//RobotMovePosition(-5, direction);
+				RobotMoveTime(direction, -m_speed, (int) distance);
+			}
 		}
 		// compute the moving time
 		//int duration=(int) ((distance-8)*200);
