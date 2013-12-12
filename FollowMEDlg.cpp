@@ -670,12 +670,12 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		else if (distance> 8.5 && distance<=19)
 		{
 			//RobotMovePosition(5, direction);
-			RobotMoveTime(direction, m_speed, int(abs(distance-8)*50));
+			RobotMoveTime(direction, m_speed, int(abs(distance-8)*100));
 		}
 		else
 		{
 			//RobotMovePosition(-5, direction);
-			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*50));
+			RobotMoveTime(direction, -m_speed, int(abs(distance-8)*100));
 		}
 		// compute the moving time
 		//int duration=(int) ((distance-8)*200);
