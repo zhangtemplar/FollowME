@@ -616,12 +616,6 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 			// cvReleaseImage(& frame);
 		}
 
-		// send the command
-		if (param->counter==1 && param->is_tracking)
-		{
-			dlg->TrackPedestrain(results, frame);
-		}
-
 		// save the result
 		param->results.clear();
 		for (int i=0; i<results.size(); i++)
@@ -639,6 +633,12 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 		{
 			for(unsigned int i=0;i<results.size();i++)
 				cvRectangle(frame,cvPoint(results[i].left,results[i].top),cvPoint(results[i].right,results[i].bottom),CV_RGB(0,255,0),2);
+		}
+
+		// send the command
+		if (param->counter==1 && param->is_tracking)
+		{
+			dlg->TrackPedestrain(results, frame);
 		}
 	}
 	dlg->ShowImage(frame, IDC_Image_View);
@@ -708,9 +708,9 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		CvFont font;
 		double hscale=0.5;
 		double vscale=0.5;
-		int lineWidth=2;
+		int lineWidth=1;
 		char str[80];
-		sprintf(str, "%f,%d", distance, direction);
+		sprintf(str, "%.1f,%d", distance, direction);
 		cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX|CV_FONT_ITALIC,hscale,vscale,0,lineWidth);
 		cvPutText(frame, str,cvPoint(target[0].left,target[0].bottom+10),&font,cvScalar(255,255,0));
 
