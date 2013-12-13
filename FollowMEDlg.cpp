@@ -511,7 +511,7 @@ UINT PedestrainThreadFunction(LPVOID pParam)
 	PEDESTRAINTHREADPARAM *param=(PEDESTRAINTHREADPARAM *)pParam;
 	CFollowMEDlg *dlg=(CFollowMEDlg *)param->window;
 	param->is_processing=true;
-
+    
 	// grab frame from the camera
 	VARIANT vData, vInfo;
 	if (dlg->m_VitCtrl.GetSnapshot(2, &vData, &vInfo)!=S_OK)
@@ -661,6 +661,10 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		// the direction is related to the deviation of window center to the frame center
 		double deviation=(target[0].left+target[0].right-width)/75;
 		int direction=(int)(atan(deviation/7.5)*180/PI);
+      // add current robot status explaination 
+	
+
+
 		if (distance>=7.5 && distance<=8.5)
 		{
 			return;
@@ -675,6 +679,7 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 			{
 				//RobotMovePosition(5, direction);
 				RobotMoveTime(direction, m_speed, (int) distance);
+			
 			}
 			else
 			{
@@ -695,11 +700,23 @@ void CFollowMEDlg::TrackPedestrain(std::vector<CPedestrainRect> target, IplImage
 		//	// we need to move backward
 		//	RobotMoveTime(direction, -100, duration);
 		//}
+		//char str[80];
+		//sprintf(str, "%f,%d", distance, direction);
+		//m_edit_speed.SetWindowTextA(str);
+		//sprintf(str, "%d", direction);
+		//m_edit_direction.SetWindowTextA(str);
+		CvFont font;
+		double hscale=0.5;
+		double vscale=0.5;
+		int lineWidth=2;
 		char str[80];
-		sprintf(str, "%f", distance);
-		m_edit_speed.SetWindowTextA(str);
-		sprintf(str, "%d", direction);
-		m_edit_direction.SetWindowTextA(str);
+		sprintf(str, "%f,%d", distance, direction);
+		cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX|CV_FONT_ITALIC,hscale,vscale,0,lineWidth);
+		cvPutText(frame, str,cvPoint(target[0].left,target[0].bottom+10),&font,cvScalar(255,255,0));
+
+		CTime theTime; 
+		theTime=CTime::GetCurrentTime();
+		cvSaveImage(theTime.Format("%Y-%M-%d-%H-%M-%S.jpg"), frame);
 	}
 }
 
